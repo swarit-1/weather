@@ -1,0 +1,24 @@
+Austin Energy Wind Damage Mitigation Guidelines
+
+High wind events are a leading cause of power outages in the Austin Energy service territory. These guidelines outline preventive and response measures for wind-related grid impacts.
+
+Prevention:
+- Vegetation management program maintains clearances per NERC FAC-003 standards.
+- Distribution poles are inspected on a 10-year cycle; poles failing strength tests are replaced.
+- Guy wires and anchors on transmission structures are inspected annually.
+- Smart reclosers are configured to lock out after three attempts during sustained high winds to prevent equipment damage.
+
+Operational Thresholds:
+- Wind gust 35 mph: Heightened awareness; crews monitor conditions.
+- Wind gust 45 mph: Crew standby; suspend non-emergency overhead work.
+- Wind gust 60 mph: Full emergency activation; all crews sheltered until winds subside.
+
+Outage Response:
+- Outage Management System automatically prioritizes restoration by customer count and critical facility impact.
+- Fuse coordination ensures upstream devices do not trip on downstream faults.
+- SCADA-operated switches are used to isolate faulted sections and restore unfaulted segments.
+
+Post-Event Review:
+- All wind-related outages are analyzed for root cause (tree contact, equipment failure, foreign object).
+- Chronic outage locations are flagged for infrastructure hardening (undergrounding, stronger poles, spacer cable).
+- Lessons learned are incorporated into the annual storm preparedness plan.
