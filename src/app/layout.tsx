@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, IBM_Plex_Sans } from "next/font/google";
+<<<<<<< HEAD
 import Script from "next/script";
+=======
+>>>>>>> origin/main
 import "./globals.css";
 import { StoreProvider } from "@/lib/store";
 
@@ -42,6 +45,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${headingFont.variable} ${bodyFont.variable}`}>
+<<<<<<< HEAD
       <head>
         <Script
           id="crypto-randomuuid-polyfill"
@@ -89,6 +93,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
+=======
+>>>>>>> origin/main
       <body>
         <StoreProvider>{children}</StoreProvider>
       </body>
