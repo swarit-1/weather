@@ -1,0 +1,26 @@
+Austin Energy Tornado Response Plan
+
+Tornado warnings represent the highest threat level for Austin Energy infrastructure. Immediate protective actions are required when the National Weather Service issues a Tornado Warning for any portion of the service territory.
+
+Immediate Actions:
+- All field personnel take shelter immediately upon tornado warning issuance.
+- System operators prepare for widespread outage by pre-loading restoration switching plans.
+- Emergency Operations Center is activated with full staffing.
+- Mutual aid requests are initiated proactively; do not wait for damage assessment.
+
+Damage Assessment:
+- Aerial patrol of transmission lines begins within 1 hour of tornado warning expiration.
+- Ground crews inspect substations in the warning polygon before energizing.
+- Customer outage reports are mapped against the tornado track for prioritized restoration.
+
+Restoration Priority:
+1. Transmission lines serving multiple substations.
+2. Substations serving critical facilities (hospitals, water, emergency services).
+3. Distribution feeders with highest customer count.
+4. Individual service restorations.
+
+Public Safety Considerations:
+- Downed power lines are presumed energized until verified de-energized by qualified personnel.
+- Austin Energy coordinates with Austin Fire Department for downed line response.
+- Public messaging emphasizes staying away from downed lines and reporting them to 311.
+- Generators connected without transfer switches create backfeed hazards; crews must verify isolation before working lines.

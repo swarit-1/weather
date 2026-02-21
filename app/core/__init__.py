@@ -1,1 +1,1 @@
-# Deterministic logic (no LLM)
+"""Core services package."""

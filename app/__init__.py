@@ -1,1 +1,1 @@
-# Weather analysis app
+"""Weather analysis application package."""
