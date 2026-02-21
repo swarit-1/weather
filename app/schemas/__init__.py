@@ -2,6 +2,11 @@
 
 from app.schemas.risk import (
     Alert,
+    WeatherSnapshot,
+    DerivedScenario,
+    RiskScores,
+    RAGSnippet,
+    RiskAnalysisOutput,
     ContextBundle,
     CoreWeatherSnapshot,
     DerivedScenario,
@@ -16,6 +21,11 @@ from app.schemas.risk import (
 
 __all__ = [
     "Alert",
+    "WeatherSnapshot",
+    "DerivedScenario",
+    "RiskScores",
+    "RAGSnippet",
+    "RiskAnalysisOutput",
     "ContextBundle",
     "CoreWeatherSnapshot",
     "DerivedScenario",

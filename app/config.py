@@ -1,4 +1,4 @@
-"""Environment and constants."""
+"""Environment configuration and constants."""
 
 import os
 from pathlib import Path
