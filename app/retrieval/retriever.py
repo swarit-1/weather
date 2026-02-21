@@ -1,41 +1,46 @@
-"""Role-filtered top-k retrieval from vector store."""
+"""Retrieval pipeline: query_text → filter by ContextBundle → RAGSnippet lists."""
 
-from typing import List, Optional
-from app.retrieval.vector_store import VectorStore
-from app.retrieval.chunk_models import RetrievalResult
+from typing import List, Optional, Callable, Tuple
+
+from app.retrieval.rag_schema import ContextBundle, RAGSnippet, RoleTag
+from app.retrieval.vector_store import VectorStore, retrieve_snippets as _retrieve_snippets
+
 
 class Retriever:
-    """Retrieval layer with role-based filtering."""
-    
-    def __init__(self, vector_store: VectorStore):
-        self.vector_store = vector_store
-    
-    def retrieve(
+    """
+    Retrieval layer: uses vector store + embedding_fn to return general and role-specific RAGSnippets.
+    """
+
+    def __init__(
         self,
-        query_embedding: List[float],
-        top_k: int = 5,
-        role_filter: Optional[str] = None
-    ) -> List[RetrievalResult]:
+        vector_store: VectorStore,
+        embedding_fn: Callable[[str], List[float]],
+    ) -> None:
+        self.vector_store = vector_store
+        self.embedding_fn = embedding_fn
+
+    def retrieve_snippets(
+        self,
+        query_text: str,
+        context_bundle: ContextBundle,
+        top_k_general: int,
+        top_k_role: int,
+        desired_role: Optional[RoleTag] = None,
+    ) -> Tuple[List[RAGSnippet], List[RAGSnippet]]:
         """
-        Retrieve relevant chunks with optional role filtering.
-        
-        Args:
-            query_embedding: Query vector
-            top_k: Number of results to return
-            role_filter: Optional role to filter results
-            
+        Compute query embedding, filter by context, rank by similarity; return RAGSnippet lists.
+
         Returns:
-            List of filtered RetrievalResult
+            (general_snippets, role_specific_snippets) matching ContextBundle.general_snippets
+            and ContextBundle.role_specific_snippets / RiskAnalysisOutput.rag_evidence.
         """
-        results = self.vector_store.search(query_embedding, top_k * 2)
-        
-        # TODO: Apply role-based filtering if specified
-        if role_filter:
-            results = self._filter_by_role(results, role_filter)
-        
-        return results[:top_k]
-    
-    def _filter_by_role(self, results: List[RetrievalResult], role: str) -> List[RetrievalResult]:
-        """Filter retrieval results by role."""
-        # TODO: Implement role-based filtering logic
-        return results
+        query_embedding = self.embedding_fn(query_text)
+        records = self.vector_store.get_all_records()
+        return _retrieve_snippets(
+            records,
+            query_embedding,
+            context_bundle,
+            top_k_general,
+            top_k_role,
+            desired_role=desired_role,
+        )
