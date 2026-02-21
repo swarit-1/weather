@@ -1,0 +1,171 @@
+:root {
+  --risk-green: #22c55e;
+  --risk-yellow: #eab308;
+  --risk-orange: #f97316;
+  --risk-red: #ef4444;
+  --panel-bg: rgba(15, 23, 42, 0.95);
+  --panel-border: rgba(148, 163, 184, 0.2);
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #0f172a;
+  color: var(--text);
+}
+
+#__next, .app {
+  height: 100%;
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.risk-panel {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 320px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.risk-panel h2 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.risk-panel .zip-placeholder {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.risk-panel section {
+  margin-bottom: 1rem;
+}
+
+.risk-panel section:last-child {
+  margin-bottom: 0;
+}
+
+.risk-panel .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.risk-panel .value {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.risk-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.risk-bar .name {
+  width: 120px;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.risk-bar .bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.risk-bar .bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.2s ease;
+}
+
+.risk-bar .num {
+  width: 36px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.risk-bar .bar.risk-green { background: var(--risk-green); }
+.risk-bar .bar.risk-yellow { background: var(--risk-yellow); }
+.risk-bar .bar.risk-orange { background: var(--risk-orange); }
+.risk-bar .bar.risk-red { background: var(--risk-red); }
+
+.alerts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.alerts-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.alerts-list li:last-child {
+  border-bottom: none;
+}
+
+.alerts-list .alert-headline {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.alerts-list .alert-event {
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.event-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.event-badge.normal { background: rgba(34, 197, 94, 0.25); color: #86efac; }
+.event-badge.heat { background: rgba(249, 115, 22, 0.25); color: #fdba74; }
+.event-badge.wind { background: rgba(59, 130, 246, 0.25); color: #93c5fd; }
+.event-badge.storm { background: rgba(139, 92, 246, 0.25); color: #c4b5fd; }
+.event-badge.critical { background: rgba(239, 68, 68, 0.25); color: #fca5a5; }
+
+.loading {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.error {
+  color: #f87171;
+  font-size: 0.875rem;
+}

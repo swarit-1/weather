@@ -1,0 +1,19 @@
+Austin Energy Storm Response Procedures
+
+When severe thunderstorm warnings are issued for the Austin service territory, all field crews must be placed on standby. Priority is given to restoring service to critical facilities including hospitals, water treatment plants, and emergency shelters.
+
+Crew Deployment Protocol:
+- All available line crews are activated when wind gusts exceed 45 mph.
+- Mutual aid agreements with neighboring utilities are triggered when outages exceed 50,000 customers.
+- Tree trimming crews are pre-positioned in areas with dense canopy overhang near distribution lines.
+- Underground cable crews are dispatched when flash flood warnings are active to inspect substations in flood-prone areas.
+
+Equipment Staging:
+- Mobile transformers must be staged at designated rally points before storm arrival.
+- Portable generators are deployed to critical facilities within 2 hours of sustained outage.
+- Drone inspection teams are activated after wind speeds drop below 25 mph for damage assessment.
+
+Safety Requirements:
+- No overhead line work is permitted when sustained winds exceed 35 mph.
+- All crews must maintain minimum approach distances per OSHA 1910.269.
+- Lightning detection systems must show all-clear for 30 minutes before resuming overhead work.
