@@ -14,7 +14,10 @@ from app.retrieval.vector_store import (
     top_k_by_similarity,
 )
 from app.retrieval.retriever import Retriever
-from app.retrieval.pdf_to_embeddings import load_vector_store_from_json
+# load_vector_store_from_json lives in pdf_to_embeddings; import it as:
+#   from app.retrieval.pdf_to_embeddings import load_vector_store_from_json
+# (not re-exported here to avoid loading pdf_to_embeddings when the package is imported,
+#  which would trigger RuntimeWarning when running python -m app.retrieval.pdf_to_embeddings)
 from app.retrieval.protocol_retrieval import (
     build_query_text,
     context_bundle_to_playbook_context,
@@ -42,7 +45,6 @@ __all__ = [
     "retrieve_snippets",
     "top_k_by_similarity",
     "Retriever",
-    "load_vector_store_from_json",
     "build_query_text",
     "context_bundle_to_playbook_context",
     "context_bundle_to_playbook_context_per_role",
