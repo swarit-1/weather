@@ -97,6 +97,90 @@ def get_query_embedding(query: str, model: str = EMBEDDING_MODEL) -> List[float]
     return vectors[0] if vectors else []
 
 
+# --- Infer tags from chunk context (protocol/playbook content) ---
+
+# Keyword cues for event_type and role_tag (energy company protocol)
+_EVENT_CUES = {
+    "heat": ("heat", "temperature", "cooling", "load management", "peak demand", "heat index", "extreme heat"),
+    "wind": ("wind", "gust", "high wind", "elevated work", "wind speed", "wind advisory"),
+    "storm": ("storm", "thunderstorm", "lightning", "precipitation", "flood", "severe weather"),
+    "critical": ("tornado", "severe thunderstorm", "flash flood", "emergency", "evacuation", "warning", "critical"),
+}
+_ROLE_CUES = {
+    "grid_ops": ("load", "transformer", "generation", "grid", "demand", "shedding", "capacity", "distribution", "voltage", "substation", "circuit"),
+    "field_ops": ("crew", "field", "restoration", "safety", "work order", "dispatch", "bucket truck", "line crew", "elevated work", "personal protective"),
+    "comms": ("public", "customer", "communication", "advisory", "notification", "message", "press", "media", "outage notification", "social media"),
+}
+
+
+def infer_tags_from_chunk_text(chunk: str, title: str = "") -> VectorRecordTags:
+    """
+    Infer event_types and role_tag from chunk (and title) content.
+    Used when ingesting protocol/playbook so tags reflect what the chunk actually says.
+    """
+    text = (title + " " + chunk).lower()
+    event_types = []
+    for event, cues in _EVENT_CUES.items():
+        if any(c in text for c in cues):
+            event_types.append(event)
+    if not event_types:
+        event_types = ["normal"]
+
+    role_scores = {}
+    for role, cues in _ROLE_CUES.items():
+        role_scores[role] = sum(1 for c in cues if c in text)
+    best_role = max(role_scores, key=role_scores.get)
+    role_tag = best_role if role_scores[best_role] > 0 else "general"
+
+    return VectorRecordTags(
+        event_types=event_types,
+        severity_min="low",
+        role_tag=role_tag,
+    )
+
+
+def get_tags_for_chunk_llm(
+    client: OpenAI,
+    chunk: str,
+    title: str = "",
+    model: str = "gpt-4o-mini",
+) -> VectorRecordTags:
+    """
+    Use LLM to infer event_types and role_tag from chunk context.
+    Falls back to infer_tags_from_chunk_text if parsing fails.
+    """
+    prompt = (
+        "This is an excerpt from an energy company protocol/playbook.\n\n"
+        f"Title: {title}\n\nExcerpt:\n{chunk[:2500]}\n\n"
+        "Return a JSON object with exactly:\n"
+        '"event_types": array of one or more of "normal", "heat", "wind", "storm", "critical",\n'
+        '"role_tag": one of "grid_ops", "field_ops", "comms", "general"\n'
+        "Base event_types and role_tag on what the excerpt is about (e.g. load/transformer → grid_ops + heat, crew safety in wind → field_ops + wind). "
+        "Return only the JSON object, no other text."
+    )
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.2,
+        )
+        content = (response.choices[0].message.content or "").strip()
+        if "```" in content:
+            content = content.split("```")[1].replace("json", "").strip()
+        data = json.loads(content)
+        event_types = data.get("event_types") or ["normal"]
+        role_tag = data.get("role_tag") or "general"
+        if role_tag not in ("grid_ops", "field_ops", "comms", "general"):
+            role_tag = "general"
+        return VectorRecordTags(
+            event_types=[e for e in event_types if e in ("normal", "heat", "wind", "storm", "critical")] or ["normal"],
+            severity_min="low",
+            role_tag=role_tag,
+        )
+    except (json.JSONDecodeError, TypeError, KeyError):
+        return infer_tags_from_chunk_text(chunk, title)
+
+
 def get_keywords_for_chunk(client: OpenAI, chunk: str, model: str = "gpt-4o-mini") -> List[str]:
     """Use GPT to extract a short list of keywords for a text chunk."""
     prompt = (
@@ -198,10 +282,17 @@ def run(
     tags: Optional[VectorRecordTags] = None,
     title: Optional[str] = None,
     url: str = "",
+    infer_tags_from_context: bool = False,
+    infer_tags_with_llm: bool = False,
 ) -> int:
     """
     Process a PDF: extract text, chunk, embed, extract keywords, upsert VectorRecords.
-    Tags are required for new records; if not provided, default_tags() is used.
+
+    Tags:
+    - If infer_tags_from_context=True, event_types and role_tag are inferred from each
+      chunk's content (protocol/playbook). Use infer_tags_with_llm=True for LLM-based
+      inference; else keyword-based heuristics. Recommended for energy company protocol docs.
+    - Otherwise, tags come from the tags argument (or default_tags()).
     Only adds a record if its embedding is not already represented (max similarity < threshold).
     Returns the number of new records added.
     """
@@ -231,14 +322,28 @@ def run(
         if max_similarity_to_store(vector, store) >= similarity_threshold:
             continue
         keywords = get_keywords_for_chunk(client, chunk, model=keyword_model)
-        chunk_tags = VectorRecordTags(
-            event_types=record_tags.event_types,
-            severity_min=record_tags.severity_min,
-            role_tag=record_tags.role_tag,
-            risk_factor=record_tags.risk_factor,
-            keywords=keywords or record_tags.keywords,
-            source_quality=record_tags.source_quality,
-        )
+        if infer_tags_from_context:
+            if infer_tags_with_llm:
+                base_tags = get_tags_for_chunk_llm(client, chunk, title=doc_title, model=keyword_model)
+            else:
+                base_tags = infer_tags_from_chunk_text(chunk, title=doc_title)
+            chunk_tags = VectorRecordTags(
+                event_types=base_tags.event_types,
+                severity_min=base_tags.severity_min,
+                role_tag=base_tags.role_tag,
+                risk_factor=record_tags.risk_factor,
+                keywords=keywords or base_tags.keywords,
+                source_quality=record_tags.source_quality,
+            )
+        else:
+            chunk_tags = VectorRecordTags(
+                event_types=record_tags.event_types,
+                severity_min=record_tags.severity_min,
+                role_tag=record_tags.role_tag,
+                risk_factor=record_tags.risk_factor,
+                keywords=keywords or record_tags.keywords,
+                source_quality=record_tags.source_quality,
+            )
         record = VectorRecord(
             id=str(uuid.uuid4()),
             title=doc_title if len(chunks) == 1 else f"{doc_title} (excerpt {i + 1})",
@@ -304,6 +409,16 @@ def main() -> None:
     )
     parser.add_argument("--title", default=None, help="Document title for stored records (default: PDF stem)")
     parser.add_argument("--url", default="", help="URL for stored records (default: empty)")
+    parser.add_argument(
+        "--infer-tags-from-context",
+        action="store_true",
+        help="Infer event_types and role_tag from each chunk's content (for protocol/playbook docs)",
+    )
+    parser.add_argument(
+        "--infer-tags-with-llm",
+        action="store_true",
+        help="Use LLM to infer tags from chunk context (requires --infer-tags-from-context)",
+    )
     args = parser.parse_args()
 
     tags = VectorRecordTags(
@@ -323,6 +438,8 @@ def main() -> None:
         tags=tags,
         title=args.title,
         url=args.url,
+        infer_tags_from_context=args.infer_tags_from_context,
+        infer_tags_with_llm=args.infer_tags_with_llm,
     )
     print(f"Added {added} new embedding(s) to the store.")
 

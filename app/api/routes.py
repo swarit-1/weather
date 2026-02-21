@@ -8,11 +8,10 @@ from app.core.trigger_engine import derive_scenario
 from app.core.weather_service import fetch_live_weather
 from app.core.rag_adapter import core_to_rag_risk_analysis_output
 from app.retrieval import (
-    load_vector_store_from_json,
     retrieve_protocol_snippets_from_risk,
     set_rag_evidence_from_bundle,
 )
-from app.retrieval.pdf_to_embeddings import get_query_embedding
+from app.retrieval.pdf_to_embeddings import get_query_embedding, load_vector_store_from_json
 from app.llm import run_playbook_decisions
 
 router = APIRouter()

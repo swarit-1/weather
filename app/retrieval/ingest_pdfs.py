@@ -11,9 +11,13 @@ Usage:
   # Custom store path:
   python -m app.retrieval.ingest_pdfs doc1.pdf doc2.pdf --store ./my_embeddings.json
 
-  # Tag the first PDF as heat/grid_ops and the second as wind/field_ops (for retrieval testing):
+  # Tag the first PDF as heat/grid_ops and the second as wind/field_ops (manual):
   python -m app.retrieval.ingest_pdfs heat_playbook.pdf wind_playbook.pdf \\
     --tags "heat,grid_ops" "wind,field_ops"
+
+  # Infer tags from each chunk's content (recommended for protocol/playbook docs):
+  python -m app.retrieval.ingest_pdfs protocol1.pdf protocol2.pdf --infer-tags-from-context
+  python -m app.retrieval.ingest_pdfs protocol1.pdf --infer-tags-from-context --infer-tags-with-llm
 """
 
 import argparse
@@ -74,6 +78,16 @@ def main() -> None:
     parser.add_argument("--similarity-threshold", type=float, default=0.92)
     parser.add_argument("--chunk-size", type=int, default=512)
     parser.add_argument("--overlap", type=int, default=50)
+    parser.add_argument(
+        "--infer-tags-from-context",
+        action="store_true",
+        help="Infer event_types and role_tag from each chunk (for protocol/playbook content)",
+    )
+    parser.add_argument(
+        "--infer-tags-with-llm",
+        action="store_true",
+        help="Use LLM to infer tags per chunk (use with --infer-tags-from-context)",
+    )
     args = parser.parse_args()
 
     store_path = args.store or str(DEFAULT_STORE)
@@ -98,9 +112,12 @@ def main() -> None:
             tags=tags,
             title=title,
             url="",
+            infer_tags_from_context=args.infer_tags_from_context,
+            infer_tags_with_llm=args.infer_tags_with_llm,
         )
         total_added += added
-        print(f"  {path.name}: +{added} records (tags: event_types={tags.event_types}, role_tag={tags.role_tag})")
+        mode = "inferred from context" if args.infer_tags_from_context else f"event_types={tags.event_types}, role_tag={tags.role_tag}"
+        print(f"  {path.name}: +{added} records (tags: {mode})")
 
     print(f"Total new records: {total_added}. Store: {store_path}")
 
