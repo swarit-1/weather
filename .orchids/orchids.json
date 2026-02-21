@@ -1,0 +1,6 @@
+{
+  "projectId": "{{PROJECT_ID}}",
+  "createdAt": {{CREATED_AT}},
+  "startupCommands": ["bun install; npx next dev --port 3000"],
+  "templateId": "any"
+}
