@@ -3,3 +3,28 @@ venv/
 .venv/
 node_modules/
 frontend/node_modules/
+
+# OS/editor artifacts
+.DS_Store
+
+# Next.js build output
+.next/
+frontend/.next/
+web/.next/
+
+# Python cache/build artifacts
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+*.log
+debug.log
+frontend/debug.log
+
+# TypeScript incremental cache
+*.tsbuildinfo
+
+# Cursor/orchestration local files
+.orchids/
