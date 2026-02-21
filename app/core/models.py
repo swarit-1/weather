@@ -1,41 +1,41 @@
-"""Core data models for weather analysis."""
+"""WeatherSnapshot, DerivedScenario, RiskScores."""
 
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
 from datetime import datetime
+from typing import Any
+
+from pydantic import BaseModel, Field
+
 
 class WeatherSnapshot(BaseModel):
-    """Current weather conditions snapshot."""
-    timestamp: datetime
-    temperature: float
-    humidity: float
-    wind_speed: float
-    wind_direction: str
-    precipitation: float
-    visibility: float
-    pressure: float
-    cloud_cover: int
-    
-    class Config:
-        title = "Weather Snapshot"
+    """Point-in-time weather data from NWS."""
+
+    temperature: float | None = None  # °F
+    wind_speed: float | None = None  # mph
+    wind_gust: float | None = None  # mph
+    precipitation_probability: float | None = None  # 0–100
+    heat_index: float | None = None  # °F, computed if not provided
+    alerts: list[dict[str, Any]] = Field(default_factory=list)
+    forecast_summary: str | None = None
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    lat: float | None = None
+    lon: float | None = None
+    zip_code: str | None = None
+
 
 class DerivedScenario(BaseModel):
-    """Derived scenario from weather data."""
-    scenario_id: str
-    name: str
-    severity: str  # low, medium, high, critical
-    triggers: List[str]
-    affected_operations: List[str]
-    
-    class Config:
-        title = "Derived Scenario"
+    """Weather-derived scenario from trigger engine."""
+
+    event_type: str  # heat, wind, storm, critical, normal
+    severity_level: str  # low, medium, high, critical
+    trigger_reason: str
+    confidence_score: float = Field(ge=0.0, le=1.0)
+
 
 class RiskScores(BaseModel):
-    """Deterministic risk scoring."""
-    overall_risk: float
-    risk_by_category: Dict[str, float]
-    affected_roles: List[str]
-    confidence: float
-    
-    class Config:
-        title = "Risk Scores"
+    """Deterministic risk scores 0–100."""
+
+    load_stress: float = Field(ge=0, le=100)
+    outage_likelihood: float = Field(ge=0, le=100)
+    restoration_difficulty: float = Field(ge=0, le=100)
+    crew_urgency: float = Field(ge=0, le=100)
+    public_safety_risk: float = Field(ge=0, le=100)
