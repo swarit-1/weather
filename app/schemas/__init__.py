@@ -2,18 +2,28 @@
 
 from app.schemas.risk import (
     Alert,
-    WeatherSnapshot,
+    ContextBundle,
+    CoreWeatherSnapshot,
     DerivedScenario,
-    RiskScores,
+    Playbook,
+    PlaybookAction,
     RAGSnippet,
     RiskAnalysisOutput,
+    RiskScores,
+    RunRecord,
+    WeatherSnapshot,
 )
 
 __all__ = [
     "Alert",
-    "WeatherSnapshot",
+    "ContextBundle",
+    "CoreWeatherSnapshot",
     "DerivedScenario",
-    "RiskScores",
+    "Playbook",
+    "PlaybookAction",
     "RAGSnippet",
     "RiskAnalysisOutput",
+    "RiskScores",
+    "RunRecord",
+    "WeatherSnapshot",
 ]

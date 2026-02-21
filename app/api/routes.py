@@ -1,12 +1,16 @@
 """StormOps Console API — stateless, no DB."""
 
+from typing import Optional
+
 from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
 from app.core.models import DerivedScenario, RiskScores, WeatherSnapshot
 from app.core.risk_engine import compute_risk_scores
 from app.core.trigger_engine import derive_scenario
 from app.core.weather_service import fetch_live_weather
 from app.core.rag_adapter import core_to_rag_risk_analysis_output
+from app.core.orchestration import run_autonomous_cycle
 from app.retrieval import (
     retrieve_protocol_snippets_from_risk,
     set_rag_evidence_from_bundle,
@@ -15,6 +19,11 @@ from app.retrieval.pdf_to_embeddings import get_query_embedding, load_vector_sto
 from app.llm import run_playbook_decisions
 
 router = APIRouter()
+
+
+class AutonomousCycleRequest(BaseModel):
+    weather_snapshot: WeatherSnapshot
+    simulate: Optional[str] = None
 
 
 @router.get("/analyze")
@@ -84,3 +93,23 @@ async def analyze(
         out["recommendations"] = {}
 
     return out
+
+
+@router.post("/run-autonomous-cycle")
+async def autonomous_cycle(request: AutonomousCycleRequest) -> dict:
+    """
+    Full autonomous cycle: trigger → risk → RAG → LLM playbook → RunRecord.
+
+    Accepts a WeatherSnapshot and optional simulate parameter.
+    Does not call weather APIs — snapshot is provided by the caller.
+    """
+    try:
+        record = run_autonomous_cycle(
+            snapshot=request.weather_snapshot,
+            simulate=request.simulate,
+        )
+        return record.model_dump(mode="json")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
