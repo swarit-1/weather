@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """Risk analysis schemas for Engineer 2 scope."""
 
 from pydantic import BaseModel, Field
@@ -59,7 +58,6 @@ class RiskAnalysisOutput(BaseModel):
     top_risk_driver: str
     rag_snippets: List[RAGSnippet]
     timestamp: datetime
-=======
 """
 Consolidated risk analysis schemas.
 
@@ -111,4 +109,3 @@ class RunRecord(BaseModel):
     rag_snippets: List[Dict[str, Any]]
     playbook: Dict[str, Any]
     simulation: Optional[str] = None
->>>>>>> origin/main

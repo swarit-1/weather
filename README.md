@@ -41,7 +41,6 @@ npm run dev
 
 Copy `web/.env.local.example` to `web/.env.local` and set values.
 
-<<<<<<< HEAD
 ## Backend (FastAPI)
 
 ```bash
@@ -75,7 +74,6 @@ Open http://localhost:3000. Map is centered on Austin; load ZIP GeoJSON polygons
 - **PART 4** — `app/core/risk_engine.py` (WeatherSnapshot + DerivedScenario → RiskScores 0–100)
 - **PART 5** — `app/api/routes.py` (`/analyze` flow: fetch weather → derive scenario → compute risk → return JSON)
 - **PART 6** — `web/` Next.js app with Google Maps JS API, Austin-centered map, ZIP GeoJSON, risk panel, no persistence
-=======
 ## Endpoints
 
 - Health: `GET /health`
@@ -142,4 +140,3 @@ Weather (NWS) → Trigger Engine → Risk Engine → RAG Retrieval → LLM Playb
 - **app/llm/** — agent orchestration (GridOps, FieldOps, Comms, Aggregator)
 - **app/schemas/** — consolidated Pydantic schemas (Playbook, RunRecord, etc.)
 - **web/** — Next.js frontend with Google Maps, ZIP GeoJSON, risk panel
->>>>>>> origin/main

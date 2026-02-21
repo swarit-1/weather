@@ -264,7 +264,6 @@ body {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
-<<<<<<< HEAD
 
 .global-map-shell {
   position: relative;
@@ -396,5 +395,3 @@ body {
     right: 20px;
   }
 }
-=======
->>>>>>> origin/main
