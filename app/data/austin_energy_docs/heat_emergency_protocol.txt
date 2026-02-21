@@ -1,0 +1,25 @@
+Austin Energy Heat Emergency Protocol
+
+When the heat index exceeds 105°F, Austin Energy activates its Heat Emergency Protocol to manage increased electrical load and protect public safety.
+
+Load Management:
+- Demand response programs are activated when system load exceeds 95% of available capacity.
+- Voluntary conservation appeals are issued through media and social channels.
+- Large commercial customers on interruptible tariffs may be curtailed.
+- Transformer loading is monitored hourly; units exceeding 120% nameplate are flagged for immediate relief.
+
+Grid Operations:
+- Transmission operators increase spinning reserves to account for potential generation trips.
+- Distribution feeder switching plans are prepared to redistribute load from overloaded transformers.
+- Capacitor banks are verified operational to maintain voltage support during peak load.
+
+Public Safety:
+- Cooling centers are opened in coordination with the City of Austin.
+- Austin Energy customer assistance programs provide bill relief for vulnerable populations.
+- Outdoor workers are reminded of OSHA heat illness prevention standards.
+- Crews rotate on 2-hour cycles with mandatory hydration and rest breaks when heat index exceeds 110°F.
+
+Equipment Protection:
+- Transformer oil temperatures are monitored via SCADA; alarm thresholds are lowered during heat events.
+- Underground cable ampacity is de-rated by 10% when soil temperatures exceed thresholds.
+- Substation ventilation and cooling systems are verified operational before peak hours.
